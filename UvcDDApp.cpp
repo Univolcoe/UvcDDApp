@@ -62,6 +62,7 @@ UvcDDApp::UvcDDApp(HINSTANCE hInstance)
 	mClientBPP = CLIENT_BPP;
 	assert(mApp == nullptr);
 	mApp = this;
+	return;
 }
 
 UvcDDApp::~UvcDDApp()
@@ -279,7 +280,7 @@ void UvcDDApp::Update(const UvcTimer& Timer)
 	{
 		if (FAILED(mlpDDSurefacePrimary->Blt(&destRect, mlpDDSurefaceBackBuffer, &srcRect, DDBLT_WAIT, NULL)))
 		{
-			__POSTERR("blt Failed");
+			__POSTERR("Blt Failed");
 			PostQuitMessage(0);
 			return;
 		}
@@ -287,10 +288,10 @@ void UvcDDApp::Update(const UvcTimer& Timer)
 	return;
 }
 
-void UvcDDApp::Draw(const UvcTimer& Timer)
-{
-	// TODO: 在此处添加实现代码.
-}
+//void UvcDDApp::Draw(const UvcTimer& Timer)
+//{
+//	// TODO: 在此处添加实现代码.
+//}
 
 LPDIRECTDRAWCLIPPER UvcDDApp::DDrawAttachClipper()
 {
@@ -469,7 +470,7 @@ bool UvcDDApp::InitDDraw()
 
 	UvcDXInit_s(
 		mlpDD7->SetDisplayMode(mClientWidth, mClientHeight, mClientBPP, 0, 0),
-		"SetDisplaymodeErr"
+		"SetDisplayMode Error"
 	);
 
 	if (!(CreatSwapChain()))
@@ -618,13 +619,40 @@ int UvcDDApp::DrawImageToDDSurface(UvcImage ubmp, DDSURFACEDESC2 ddsd, RECT SrcR
 	{
 		for (int i = 0; i < SrcRect.right - SrcRect.left; i++)
 		{
-			ubmp.GetPexelRGB(SrcRect.left + i, SrcRect.top + j, r, g, b);
+			ubmp.GetPixelRGB(SrcRect.left + i, SrcRect.top + j, r, g, b);
 			//PlotPixel(ddsd, mClientRect.left + x, mClientRect.top + y, r, g, b);
 			PlotPixel(ddsd, x + i, y + j, r, g, b);
 		}
 	}
 
 	return 1;
+}
+
+RGBInfo UvcDDApp::GetPixelRGB(int x, int y) const
+{
+	RGBInfo col;
+	UCHAR* buffer = (UCHAR*)mDDSD.lpSurface;
+
+	DWORD addr = 0;
+
+	switch (mDDPF.dwRGBBitCount)
+	{
+	case 24:
+		addr = (x + x + x) + (y * mDDSD.lPitch);
+		col.b = buffer[addr + 0];
+		col.g = buffer[addr + 1];
+		col.r = buffer[addr + 2];
+		break;
+	case 32:
+		addr = (x + x + x + x) + (y * mDDSD.lPitch);
+		col.b = buffer[addr + 0];
+		col.g = buffer[addr + 1];
+		col.r = buffer[addr + 2];
+		break;
+	default:
+		break;
+	}
+	return col;
 }
 
 /*

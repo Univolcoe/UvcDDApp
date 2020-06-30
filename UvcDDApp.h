@@ -20,6 +20,7 @@
 
 class UvcDDApp
 {
+	// constructor and destructor
 protected:
 	UvcDDApp(HINSTANCE hInstance);
 	UvcDDApp(const UvcDDApp& res) = delete;
@@ -27,7 +28,9 @@ protected:
 	virtual ~UvcDDApp();
 
 public:
+	// get pointer 2 this App class
 	static UvcDDApp* GetApp();
+	// get this app's instance
 	HINSTANCE			AppInst();
 	HWND				MainWnd();
 	float				AspectRatio();
@@ -44,9 +47,9 @@ protected:
 	//virtual void DrawWithDX() = 0;
 
 	// to be override for handling mouse input.
-	virtual void OnMouseDown(WPARAM btnState, int x, int y) { }
-	virtual void OnMouseUp(WPARAM btnState, int x, int y) { }
-	virtual void OnMouseMove(WPARAM btnState, int x, int y) { }
+	virtual void OnMouseDown(WPARAM btnState, int x, int y) { return; };
+	virtual void OnMouseUp(WPARAM btnState, int x, int y) { return; };
+	virtual void OnMouseMove(WPARAM btnState, int x, int y) { return; };
 
 	// Attach a Clipper to the BackBufferSurface, using mClipperRECTQue
 	virtual LPDIRECTDRAWCLIPPER DDrawAttachClipper();
@@ -63,7 +66,9 @@ protected:
 
 	// WARNING - Must Run in Draw func!!!!
 	int DrawImageToDDSurface(UvcImage ubmp, DDSURFACEDESC2 ddsd, RECT SrcRect, int x, int y);
+	RGBInfo GetPixelRGB(int x, int y) const;
 
+	DDSURFACEDESC2 GetDDSD() { return mDDSD; };
 public:
 	LPDIRECTDRAW7 mlpDD7;
 

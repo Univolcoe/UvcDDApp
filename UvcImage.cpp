@@ -22,10 +22,37 @@ UvcImage::UvcImage()
 UvcImage::UvcImage(const char* fileName)
 {
 	UvcImage::loadImage(fileName);
+	return;
+}
+
+UvcImage::UvcImage(const UvcImage& UImg)
+{
+	this->mBitCnt = UImg.mBitCnt;
+	this->mBitMapFileHeader = UImg.mBitMapFileHeader;
+	this->mBitMapInfoHeader = UImg.mBitMapInfoHeader;
+	for (int i = 0; i < 256; i++)
+		this->mPalette[i] = UImg.mPalette[i];
+	mBuffer = (UCHAR*)malloc(mBitMapInfoHeader.biSizeImage);
+	memcpy_s(this->mBuffer, UImg.mBitMapInfoHeader.biSizeImage, UImg.mBuffer, UImg.mBitMapInfoHeader.biSizeImage);
+	return;
 }
 
 UvcImage::~UvcImage()
 {
+	unloadImage();
+	return;
+}
+
+void UvcImage::operator=(UvcImage src)
+{
+	mBitCnt = src.mBitCnt;
+	mBitMapFileHeader = src.mBitMapFileHeader;
+	mBitMapInfoHeader = src.mBitMapInfoHeader;
+	for (int i = 0; i < 256; i++)
+		mPalette[i] = src.mPalette[i];
+	mBuffer = (UCHAR*)malloc(src.mBitMapInfoHeader.biSizeImage);
+	memcpy_s(mBuffer, src.mBitMapInfoHeader.biSizeImage, src.mBuffer, src.mBitMapInfoHeader.biSizeImage);
+	return;
 }
 
 int UvcImage::loadImage(const char* fileName)
@@ -165,7 +192,17 @@ RECT UvcImage::GetDestRect(long x, long y)
 	return r;
 }
 
-void UvcImage::GetPexelRGB(int x, int y, UCHAR& r, UCHAR& g, UCHAR& b)
+RECT UvcImage::GetCameraRECT(LONG Camerax, LONG Cameray, LONG Width, LONG Height)
+{
+	RECT r = { 0 };
+	r.top = Cameray;
+	r.left = Camerax;
+	r.right = Camerax + Width;
+	r.bottom = Cameray + Height;
+	return r;
+}
+
+void UvcImage::GetPixelRGB(int x, int y, UCHAR& r, UCHAR& g, UCHAR& b)
 {
 	if (mBitMapInfoHeader.biBitCount < 8) return;
 
@@ -195,6 +232,38 @@ void UvcImage::GetPexelRGB(int x, int y, UCHAR& r, UCHAR& g, UCHAR& b)
 	default:break;
 	}
 	return;
+}
+
+RGBInfo UvcImage::GetPixelRGB(int x, int y)
+{
+	if (mBitMapInfoHeader.biBitCount < 8) return RGBInfo(0, 0, 0);
+	RGBInfo col(0, 0, 0);
+	switch (mBitMapInfoHeader.biBitCount)
+	{
+	case 16:
+	{
+		col.b = (mBuffer[(x + y * mBitMapInfoHeader.biWidth) * 2 + 0]) >> 3;
+		col.g = (mBuffer[(x + y * mBitMapInfoHeader.biWidth) * 2 + 1]) >> 2;
+		col.r = (mBuffer[(x + y * mBitMapInfoHeader.biWidth) * 2 + 2]) >> 3;
+	}
+	break;
+	case 24:
+	{
+		col.b = mBuffer[(x + y * mBitMapInfoHeader.biWidth) * 3 + 0];
+		col.g = mBuffer[(x + y * mBitMapInfoHeader.biWidth) * 3 + 1];
+		col.r = mBuffer[(x + y * mBitMapInfoHeader.biWidth) * 3 + 2];
+	}
+	break;
+	case 32:
+	{
+		col.b = mBuffer[(x + y * mBitMapInfoHeader.biWidth) * 4 + 0];
+		col.g = mBuffer[(x + y * mBitMapInfoHeader.biWidth) * 4 + 1];
+		col.r = mBuffer[(x + y * mBitMapInfoHeader.biWidth) * 4 + 2];
+	}
+	break;
+	default:break;
+	}
+	return col;
 }
 
 /*
