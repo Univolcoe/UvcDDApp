@@ -515,7 +515,7 @@ bool UvcDDApp::CreatSwapChain()
 
 		UvcDXInit_s(
 			mlpDD7->CreateSurface(&mDDSD, &mlpDDSurefaceBackBuffer, NULL),
-			"Bk sur creat fld"
+			"Back Buffer Surface Creat Failed"
 		);
 
 		return true;
