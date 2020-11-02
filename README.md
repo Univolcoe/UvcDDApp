@@ -1,6 +1,7 @@
 # UvcDDApp
+# Author: Aaron Jsc
 ---
-初学DirectDraw练手的简单封装  
+初学DirectDraw练手的简单封装, 仍然存在大量bug,但是由于一些原因并不能很好的解决。  
 要使用这个封装请继承UvcDDApp类并实现Draw函数  
 默认使用窗口模式，如果想要使用全屏模式在继承构造函数时改变mFullScreenState为true.  
 大概流程：  
@@ -8,8 +9,12 @@
 差不多这样叭，文件是没有写注释的（笑  
 有任何问题可以联系，，，但是还是找别人做的更好的叭owo  
 e-mail:aaron_jsc@163.com  
+---
+Warning: This is a program that I use to know how to upload files and creat a repository.
 
-# 错误代码及信息：  
+If you really want study about DirectX, you can try other's projects which better than this or get some books.
+
+## 错误代码及信息：  
 - Attach Clipper Failed：关联裁剪器失败，请联系有DirectDraw开发经验的人员。  
 - Back Buffer Surface Creat Failed：后备表面创建失败，请联系有DirectDraw开发经验的人员。  
 - Blt Failed：Blt执行失败，这个问题只会在窗口模式下出现，如果出现请尝试覆写Update函数禁用Blt或手动Blt。  
